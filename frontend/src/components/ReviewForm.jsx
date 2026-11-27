@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { reviewsApi } from '../services/reviews.js';
 
-export default function ReviewForm({ review }) {
+export default function ReviewForm({ review, onChange, onDelete }) {
   const initialTitle = review?.title ?? '';
   const initialContent = review?.content ?? '';
   const [title, setTitle] = useState(initialTitle);
@@ -17,6 +17,7 @@ export default function ReviewForm({ review }) {
     setError('');
     try {
       await mutation();
+      if (actionName === 'save') onChange();
       navigate('/', { replace: true });
     } catch (error) {
       setError(error.message);
@@ -58,7 +59,7 @@ export default function ReviewForm({ review }) {
           <button className="button" type="reset">Reset</button>
           {action ? <button className="button" type="button" disabled>Cancel</button> : <Link className="button" to="/">Cancel</Link>}
           {review && (
-            <button className="button button-danger" type="button" onClick={() => finish('delete', () => reviewsApi.remove(review.id))}>
+            <button className="button button-danger" type="button" onClick={() => finish('delete', () => onDelete(review))}>
               {action === 'delete' ? 'Deleting…' : 'Delete'}
             </button>
           )}

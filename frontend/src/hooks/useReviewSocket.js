@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 const reviewEvents = new Set(['review:created', 'review:updated', 'review:deleted']);
 
-export function useReviewSocket(refresh) {
+export function useReviewSocket(onConnect, onEvent) {
   useEffect(() => {
     const url = new URL('/ws', window.location.origin);
     url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -11,7 +11,7 @@ export function useReviewSocket(refresh) {
 
     function onOpen() {
       retryDelay = 500;
-      refresh();
+      onConnect();
     }
 
     function onMessage({ data }) {
@@ -21,7 +21,7 @@ export function useReviewSocket(refresh) {
       } catch {
         return;
       }
-      if (reviewEvents.has(event?.type)) refresh();
+      if (reviewEvents.has(event?.type)) onEvent(event);
     }
 
     function detach() {
@@ -50,5 +50,5 @@ export function useReviewSocket(refresh) {
       detach();
       socket?.close();
     };
-  }, [refresh]);
+  }, [onConnect, onEvent]);
 }

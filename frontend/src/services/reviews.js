@@ -14,7 +14,7 @@ async function request(path, { method = 'GET', body, signal } = {}) {
     throw new Error('Could not reach the reviews server. Please try again.');
   }
 
-  if (response.status === 204) return;
+  if (response.status === 204) return response.headers.get('X-Review-Undo-Token');
 
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
@@ -34,4 +34,5 @@ export const reviewsApi = {
   create: (body) => request(resource, { method: 'POST', body }),
   update: (id, body) => request(reviewPath(id), { method: 'PUT', body }),
   remove: (id) => request(reviewPath(id), { method: 'DELETE' }),
+  restore: (id, token) => request(`${reviewPath(id)}/restore`, { method: 'POST', body: { token } }),
 };

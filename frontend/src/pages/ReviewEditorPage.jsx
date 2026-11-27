@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router';
 import ReviewForm from '../components/ReviewForm.jsx';
 import { reviewsApi } from '../services/reviews.js';
 
-function EditReview({ id }) {
+function EditReview({ id, onChange, onDelete }) {
   const [review, setReview] = useState(null);
   const [error, setError] = useState('');
 
@@ -25,10 +25,10 @@ function EditReview({ id }) {
       </div>
     );
   }
-  return review ? <ReviewForm review={review} /> : <p className="panel message" role="status">Loading review…</p>;
+  return review ? <ReviewForm review={review} onChange={onChange} onDelete={onDelete} /> : <p className="panel message" role="status">Loading review…</p>;
 }
 
-export default function ReviewEditorPage() {
+export default function ReviewEditorPage({ onChange, onDelete }) {
   const { id } = useParams();
 
   return (
@@ -36,7 +36,7 @@ export default function ReviewEditorPage() {
       <div className="page-heading">
         <h1>{id ? 'Edit review' : 'New review'}</h1>
       </div>
-      {id ? <EditReview key={id} id={id} /> : <ReviewForm />}
+      {id ? <EditReview key={id} id={id} onChange={onChange} onDelete={onDelete} /> : <ReviewForm onChange={onChange} />}
     </>
   );
 }
